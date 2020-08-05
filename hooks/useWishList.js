@@ -35,9 +35,20 @@ const useWishList = () => {
     })
   }, [])
 
+  const removeWishList = useCallback((id) => {
+    setList((list) => {
+      const index = list.findIndex((item) => item === id);
+      const newList = [...list]
+      newList.splice(index, 1)
+      updateStorage(newList)
+      return newList
+    })
+  }, [])
+
   return {
     wishlist: list,
-    toggle
+    toggle,
+    removeWishList,
   }
 }
 

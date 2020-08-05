@@ -39,10 +39,6 @@ export const getStaticProps = async () => {
   const res = await fetch('https://rickandmortyapi.com/api/character/')
   const json = await res.json()
   const data = json.results
-  data.map((item) => {
-    item.isFavorite = false
-    return item
-  })
   return {
     props: {
       allCharacter: data

@@ -1,32 +1,36 @@
-import { useState ,useEffect } from 'react';
-import useWishlist from '../hooks/useWishList';
+import useWishList from '../hooks/useWishList';
 import Link from 'next/link';
 
-const WishList = () => {
-    const [wishlist, setItem] = useState([]);
-    const { removeWishlist } = useWishlist();
-    useEffect(() => {
-      if (localStorage.getItem('wishlist')) {
-        const wishData = JSON.parse(localStorage.getItem('wishlist'));
-        const onlyFavorites = wishData.filter((item) => item.isFavorite === true);
-        setItem(onlyFavorites);
-      }
-    }, []);
-    console.log(wishlist);
+const WishList = (props) => {
+    const { allCharacter } = props;
+    const { wishlist, removeWishList } = useWishList();
+    // new array matching the wishlist ID
+    const res = wishlist.map((id) => allCharacter.find((item) => item.id === id));
     return (
         <>
           <h1>Tu {wishlist.length ? 'wishlist' : 'wishlist esta vacio'}</h1>
+          {res.map((item) => (
+            <div key={item.id}>
+            <p>{item.name}</p>
+            <button onClick={() => removeWishList(item.id)}>Remove wishlist</button>
+          </div>
+          ))}
           <Link href="/">
             <a>Back to Home</a>
           </Link>
-          {wishlist.map(({ id, name }) => (
-            <div key={id}>
-              <p>{name}</p>
-              <button onClick={() => removeWishlist(id, wishlist, setItem)}>Remove wishlist</button>
-            </div>
-          ))}
         </>
     );
+}
+
+export const getStaticProps = async () => {
+  const res = await fetch('https://rickandmortyapi.com/api/character/')
+  const json = await res.json()
+  const data = json.results
+  return {
+    props: {
+      allCharacter: data
+    }
+  }
 }
 
 export default WishList;
